@@ -160,6 +160,7 @@ Resources:
                   - cloudformation:*
                   - ec2:*
                   - iam:GetRole
+                  - iam:CreateRole
                   - elasticloadbalancing:*
                   - ecs:*
                   - autoscaling:*

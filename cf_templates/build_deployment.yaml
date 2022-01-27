@@ -162,9 +162,13 @@ Resources:
                   - iam:GetRole
                   - iam:CreateRole
                   - iam:AttachRolePolicy
+                  - iam:DetachRolePolicy
                   - elasticloadbalancing:*
                   - ecs:*
                   - autoscaling:*
+                  - application-autoscaling:*
+                  - cloudwatch:DescribeAlarms
+                  - cloudwatch:PutMetricAlarm
 #                  - eks:DescribeNodegroup
 #                  - eks:DescribeUpdate
 #                  - eks:DescribeCluster

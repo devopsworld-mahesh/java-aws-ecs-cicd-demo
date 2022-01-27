@@ -4,7 +4,7 @@ phases:
     on-failure: ABORT
     commands:
        - apt-get update
-       - apt-get install -y git python3 python3-pip
+       - apt-get install -y git python3 python3-pip jq
        - pip install awscli
 
   pre_build: # Check if cloudformation stack are listed.
@@ -16,10 +16,10 @@ phases:
     on-failure: ABORT
     commands:
       - | 
-        if [ $STACK_EXISTS = $STACK_NAME ] ; then 
-          aws cloudformation update-stack --stack-name $STACK_NAME --template-body file://cf_templates/ecs_fargate_app_deploy.yml --parameters ParameterKey=VPC,ParameterValue=$VPC ParameterKey=SubnetA,ParameterValue=$SubnetA ParameterKey=SubnetB,ParameterValue=$SubnetB ParameterKey=Image,ParameterValue=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION ParameterKey=ServiceName,ParameterValue=$ServiceName ParameterKey=ContainerPort,ParameterValue=$ContainerPort ParameterKey=LoadBalancerPort,ParameterValue=$LoadBalancerPort ParameterKey=HealthCheckPath,ParameterValue=$HealthCheckPath ParameterKey=MinContainers,ParameterValue=$MinContainers ParameterKey=MaxContainers,ParameterValue=$MaxContainers ParameterKey=AutoScalingTargetValue,ParameterValue=$AutoScalingTargetValue
-        else
+        if [ -z $STACK_EXISTS ] ; then 
           aws cloudformation create-stack --stack-name $STACK_NAME --template-body file://cf_templates/ecs_fargate_app_deploy.yml --parameters ParameterKey=VPC,ParameterValue=$VPC ParameterKey=SubnetA,ParameterValue=$SubnetA ParameterKey=SubnetB,ParameterValue=$SubnetB ParameterKey=Image,ParameterValue=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION ParameterKey=ServiceName,ParameterValue=$ServiceName ParameterKey=ContainerPort,ParameterValue=$ContainerPort ParameterKey=LoadBalancerPort,ParameterValue=$LoadBalancerPort ParameterKey=HealthCheckPath,ParameterValue=$HealthCheckPath ParameterKey=MinContainers,ParameterValue=$MinContainers ParameterKey=MaxContainers,ParameterValue=$MaxContainers ParameterKey=AutoScalingTargetValue,ParameterValue=$AutoScalingTargetValue
+        else
+          aws cloudformation update-stack --stack-name $STACK_NAME --template-body file://cf_templates/ecs_fargate_app_deploy.yml --parameters ParameterKey=VPC,ParameterValue=$VPC ParameterKey=SubnetA,ParameterValue=$SubnetA ParameterKey=SubnetB,ParameterValue=$SubnetB ParameterKey=Image,ParameterValue=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION ParameterKey=ServiceName,ParameterValue=$ServiceName ParameterKey=ContainerPort,ParameterValue=$ContainerPort ParameterKey=LoadBalancerPort,ParameterValue=$LoadBalancerPort ParameterKey=HealthCheckPath,ParameterValue=$HealthCheckPath ParameterKey=MinContainers,ParameterValue=$MinContainers ParameterKey=MaxContainers,ParameterValue=$MaxContainers ParameterKey=AutoScalingTargetValue,ParameterValue=$AutoScalingTargetValue
         fi
   
   post_build: # Check CFT status

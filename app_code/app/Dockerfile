@@ -1,5 +1,5 @@
 #FROM openjdk:8-jre-slim
-FROM amazoncorretto:11-alpine
+FROM amazoncorretto:11-alpine3.15-full
 EXPOSE 8080 5005
 RUN mkdir -p /opt/target
 COPY target/aws-proserve-java-greeting.war /opt/target/

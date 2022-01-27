@@ -152,6 +152,7 @@ Resources:
                 Effect: Allow
                 Action:
                   - ecr:GetAuthorizationToken
+                  - iam:PassRole
                   - cloudformation:*
                   - ec2:*
 #                  - eks:DescribeNodegroup

@@ -100,8 +100,12 @@ Resources:
                   - codecommit:CancelUploadArchive
                   - ecr:DescribeImages
                   - iam:PassRole
+                  - iam:GetRole
                   - cloudformation:*
                   - ec2:*
+                  - elasticloadbalancing:*
+                  - ecs:*
+                  - autoscaling:*
               - Resource: !Sub arn:aws:s3:::${CodePipelineArtifactBucket}/*
                 Effect: Allow
                 Action:
@@ -155,6 +159,10 @@ Resources:
                   - iam:PassRole
                   - cloudformation:*
                   - ec2:*
+                  - iam:GetRole
+                  - elasticloadbalancing:*
+                  - ecs:*
+                  - autoscaling:*
 #                  - eks:DescribeNodegroup
 #                  - eks:DescribeUpdate
 #                  - eks:DescribeCluster

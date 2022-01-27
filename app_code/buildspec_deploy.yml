@@ -26,10 +26,10 @@ phases:
     on-failure: ABORT
     commands:
       - bash -c "if [ /"$CODEBUILD_BUILD_SUCCEEDING/" == /"0/" ]; then exit 1; fi"
-      - sleep 40
+      - sleep 60
       - echo -e "\nCheck CFT Stack Status for more details"
       - export STACK_STATUS=`aws cloudformation describe-stacks --stack-name $STACK_NAME | jq -r .Stacks[].StackStatus`
       - |
-        if [ $STACK_STATUS = "ROLLBACK_IN_PROGRESS" ] || [ $STACK_STATUS = "ROLLBACK_COMPLETE" ] ; then
+        if [ $STACK_STATUS = "ROLLBACK_IN_PROGRESS" ] || [ $STACK_STATUS = "ROLLBACK_COMPLETE" ] || [ $STACK_STATUS = "ROLLBACK_FAILED" ] ; then
           exit 1
         fi

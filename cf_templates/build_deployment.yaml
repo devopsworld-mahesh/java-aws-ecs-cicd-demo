@@ -15,7 +15,7 @@ Parameters:
 #    Default: 123456789012.dkr.ecr.region.amazonaws.com/image:tag
   AppServiceName:
     Type: String
-    Default: MyJavaService
+    Default: MyJavaAppService
   AppContainerPort:
     Type: Number
     Default: 8080

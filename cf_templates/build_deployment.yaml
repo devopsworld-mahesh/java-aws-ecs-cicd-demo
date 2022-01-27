@@ -300,7 +300,7 @@ Resources:
           - Name: HealthCheckPath
             Value: !Ref AppHealthCheckPath
           - Name: MinContainers
-            Value: !Ref AppMinContainer
+            Value: !Ref AppMinContainers
           - Name: MaxContainers
             Value: !Ref AppMaxContainers
           - Name: AutoScalingTargetValue

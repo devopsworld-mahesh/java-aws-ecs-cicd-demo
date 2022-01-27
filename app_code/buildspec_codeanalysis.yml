@@ -1,0 +1,28 @@
+version: 0.2
+env:
+  shell: bash
+phases:
+  install: # Setup Java8 runtime
+    on-failure: ABORT
+    runtime-versions:
+      java: corretto11
+
+  pre_build: # Setup Sonar scan cli and jq
+    on-failure: ABORT
+    commands:
+      - apt-get update
+      - apt-get install -y jq
+      - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+      - unzip ./sonar-scanner-cli-4.6.2.2472-linux.zip
+      - export PATH=$PATH:/sonar-scanner-4.6.2.2472-linux/bin/
+  
+  build: # Run Sonar Code Analysis
+    on-failure: ABORT
+    commands:
+      - cd app_code/app && mvn clean test && cd ../../
+      - cd app_code/app && mvn clean package sonar:sonar -Dsonar.login=$SONAR_TOKEN -Dsonar.projectKey=$SONAR_PROJECT_KEY && cd ../../
+      - sleep 5
+      - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$SONAR_PROJECT_KEY > result.json
+      - cat result.json
+      - export SONAR_SCAN_PROJECT_STATUS=$(jq -r '.projectStatus.status' result.json)
+      - if [ $SONAR_SCAN_PROJECT_STATUS = "ERROR" ] ; then export CODEBUILD_BUILD_SUCCEEDING=0 && exit 1; fi

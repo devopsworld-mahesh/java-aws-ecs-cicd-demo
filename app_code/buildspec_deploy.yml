@@ -1,0 +1,30 @@
+version: 0.2
+phases:
+  install: # Install AWS cli
+    on-failure: ABORT
+    commands:
+       - apt-get update
+       - apt-get install -y git python3 python3-pip
+       - pip install awscli
+
+  pre_build: # Check if cloudformation stack are listed.
+    #on-failure: ABORT
+    commands:
+      - STACK_EXISTS=`aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE | jq -r .StackSummaries[].StackName | grep $STACK_NAME`
+  
+  build: # Deploy app via CFT
+    on-failure: ABORT
+    commands:
+      - | 
+        if [ $STACK_EXISTS = $STACK_NAME ] ; then 
+          aws cloudformation update-stack --stack-name $STACK_NAME --template-body file://cf_templates/ecs_fargate_app_deploy.yml --parameters ParameterKey=VPC,ParameterValue=$VPC ParameterKey=SubnetA,ParameterValue=$SubnetA ParameterKey=SubnetB,ParameterValue=$SubnetB ParameterKey=Image,ParameterValue=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION ParameterKey=ServiceName,ParameterValue=$ServiceName ParameterKey=ContainerPort,ParameterValue=$ContainerPort ParameterKey=LoadBalancerPort,ParameterValue=$LoadBalancerPort ParameterKey=HealthCheckPath,ParameterValue=$HealthCheckPath ParameterKey=MinContainers,ParameterValue=$MinContainers ParameterKey=MaxContainers,ParameterValue=$MaxContainers ParameterKey=AutoScalingTargetValue,ParameterValue=$AutoScalingTargetValue
+        else
+          aws cloudformation create-stack --stack-name $STACK_NAME --template-body file://cf_templates/ecs_fargate_app_deploy.yml --parameters ParameterKey=VPC,ParameterValue=$VPC ParameterKey=SubnetA,ParameterValue=$SubnetA ParameterKey=SubnetB,ParameterValue=$SubnetB ParameterKey=Image,ParameterValue=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION ParameterKey=ServiceName,ParameterValue=$ServiceName ParameterKey=ContainerPort,ParameterValue=$ContainerPort ParameterKey=LoadBalancerPort,ParameterValue=$LoadBalancerPort ParameterKey=HealthCheckPath,ParameterValue=$HealthCheckPath ParameterKey=MinContainers,ParameterValue=$MinContainers ParameterKey=MaxContainers,ParameterValue=$MaxContainers ParameterKey=AutoScalingTargetValue,ParameterValue=$AutoScalingTargetValue
+        fi
+  
+  post_build: # Check CFT status
+    on-failure: ABORT
+    commands:
+      - bash -c "if [ /"$CODEBUILD_BUILD_SUCCEEDING/" == /"0/" ]; then exit 1; fi"
+      - sleep 20
+      - echo -e "\nCheck CFT Stack for more details"

@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  GitHubConnection:
+    Type: 'AWS::CodeStarConnections::Connection'
+    Properties:
+      ConnectionName: mahegithubconnection
+      ProviderType: GitHub
+      Tags:
+        - Key: Project
+          Value: mygithub
+
+Outputs:
+  GitHubConnectionArn:
+    Value: !GetAtt GitHubConnection.ConnectionArn
+  GitHubConnectionStatus:
+    Value: !GetAtt GitHubConnection.ConnectionStatus   

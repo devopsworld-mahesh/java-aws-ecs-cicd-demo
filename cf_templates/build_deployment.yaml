@@ -4,37 +4,37 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: CFN Template to deploy CodePipeline to build Docker Image of java application and push to ECR and deploy to EKS
 
 Parameters:
-  App_VPC:
+  AppVPC:
     Type: AWS::EC2::VPC::Id
-  App_SubnetA:
+  AppSubnetA:
     Type: AWS::EC2::Subnet::Id
-  App_SubnetB:
+  AppSubnetB:
     Type: AWS::EC2::Subnet::Id
 #  App_Image:
 #    Type: String
 #    Default: 123456789012.dkr.ecr.region.amazonaws.com/image:tag
-  App_ServiceName:
+  AppServiceName:
     Type: String
     Default: MyJavaService
-  App_ContainerPort:
+  AppContainerPort:
     Type: Number
     Default: 8080
-  App_LoadBalancerPort:
+  AppLoadBalancerPort:
     Type: Number
     Default: 80
-  App_HealthCheckPath:
+  AppHealthCheckPath:
     Type: String
     Default: /hello
     # for autoscaling
-  App_MinContainers:
+  AppMinContainers:
     Type: Number
     Default: 2
     # for autoscaling
-  App_MaxContainers:
+  AppMaxContainers:
     Type: Number
     Default: 10
     # target CPU utilization (%)
-  App_AutoScalingTargetValue:
+  AppAutoScalingTargetValue:
     Type: Number
     Default: 50
   CodeBranchName:
@@ -286,25 +286,25 @@ Resources:
           - Name: STACK_NAME
             Value: java-fargate-cicd-demo
           - Name: VPC
-            Value: !Ref App_VPC
+            Value: !Ref AppVPC
           - Name: SubnetA
-            Value: !Ref App_SubnetA
+            Value: !Ref AppSubnetA
           - Name: SubnetB
-            Value: !Ref App_SubnetB
+            Value: !Ref AppSubnetB
           - Name: ServiceName
-            Value: !Ref App_ServiceName
+            Value: !Ref AppServiceName
           - Name: ContainerPort
-            Value: !Ref App_ContainerPort
+            Value: !Ref AppContainerPort
           - Name: LoadBalancerPort
-            Value: !Ref App_LoadBalancerPort
+            Value: !Ref AppLoadBalancerPort
           - Name: HealthCheckPath
-            Value: !Ref App_HealthCheckPath
+            Value: !Ref AppHealthCheckPath
           - Name: MinContainers
-            Value: !Ref App_MinContainer
+            Value: !Ref AppMinContainer
           - Name: MaxContainers
-            Value: !Ref App_MaxContainers
+            Value: !Ref AppMaxContainers
           - Name: AutoScalingTargetValue
-            Value: !Ref App_AutoScalingTargetValue
+            Value: !Ref AppAutoScalingTargetValue
 
 #          - Name: EKS_CLUSTER_NAME
 #            Value: !Ref EKSClusterName

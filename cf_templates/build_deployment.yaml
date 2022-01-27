@@ -101,6 +101,7 @@ Resources:
                   - ecr:DescribeImages
                   - iam:PassRole
                   - cloudformation:*
+                  - ec2:*
               - Resource: !Sub arn:aws:s3:::${CodePipelineArtifactBucket}/*
                 Effect: Allow
                 Action:
@@ -152,6 +153,7 @@ Resources:
                 Action:
                   - ecr:GetAuthorizationToken
                   - cloudformation:*
+                  - ec2:*
 #                  - eks:DescribeNodegroup
 #                  - eks:DescribeUpdate
 #                  - eks:DescribeCluster

@@ -218,4 +218,4 @@ Resources:
 Outputs:
   Endpoint:
     Description: Endpoint
-    Value: !Join ['', ['http://', !Ref LoadBalancer]]
+    Value: !Join ['', ['http://', !GetAtt LoadBalancer.DNSName]]

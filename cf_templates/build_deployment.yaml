@@ -161,6 +161,7 @@ Resources:
                   - ec2:*
                   - iam:GetRole
                   - iam:CreateRole
+                  - iam:AttachRolePolicy
                   - elasticloadbalancing:*
                   - ecs:*
                   - autoscaling:*

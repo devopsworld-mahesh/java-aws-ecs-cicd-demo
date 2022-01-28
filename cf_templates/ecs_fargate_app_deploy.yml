@@ -39,6 +39,17 @@ Resources:
     Type: AWS::ECS::Cluster
     Properties:
       ClusterName: !Join ['', [!Ref ServiceName, Cluster]]
+      CapacityProviders:
+        - FARGATE
+        - FARGATE_SPOT
+      DefaultCapacityProviderStrategy:
+        - CapacityProvider: FARGATE
+          Weight: 1
+        - CapacityProvider: FARGATE_SPOT
+          Weight: 1
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
   JavaAppTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     DependsOn: LogGroup

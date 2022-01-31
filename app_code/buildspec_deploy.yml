@@ -3,19 +3,20 @@ phases:
   install: # Install AWS cli
     on-failure: ABORT
     commands:
-       - apt-get update
-       - apt-get install -y git python3 python3-pip jq
-       - pip install awscli
+      - apt-get update
+      - apt-get install -y git python3 python3-pip jq
+      - pip install awscli
 
   pre_build: # Check if cloudformation stack are listed.
     #on-failure: ABORT
     commands:
-      - export STACK_EXISTS=`aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE | jq -r .StackSummaries[].StackName | grep $STACK_NAME`
+      - export STACK_STATUS_FILTER="CREATE_IN_PROGRESS CREATE_COMPLETE ROLLBACK_IN_PROGRESS ROLLBACK_FAILED ROLLBACK_COMPLETE DELETE_IN_PROGRESS DELETE_FAILED UPDATE_IN_PROGRESS UPDATE_COMPLETE_CLEANUP_IN_PROGRESS UPDATE_COMPLETE UPDATE_FAILED UPDATE_ROLLBACK_IN_PROGRESS UPDATE_ROLLBACK_FAILED UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS UPDATE_ROLLBACK_COMPLETE REVIEW_IN_PROGRESS IMPORT_IN_PROGRESS IMPORT_COMPLETE IMPORT_ROLLBACK_IN_PROGRESS IMPORT_ROLLBACK_FAILED IMPORT_ROLLBACK_COMPLETE"
+      - export STACK_EXISTS=`aws cloudformation list-stacks --stack-status-filter $STACK_STATUS_FILTER | jq -r .StackSummaries[].StackName | grep $STACK_NAME`
 
   build: # Deploy app via CFT
     on-failure: ABORT
     commands:
-      - | 
+      - |
         if [ -z $STACK_EXISTS ] ; then 
           aws cloudformation create-stack --stack-name $STACK_NAME --template-body file://cf_templates/ecs_fargate_app_deploy.yml --parameters ParameterKey=VPC,ParameterValue=$VPC ParameterKey=SubnetA,ParameterValue=$SubnetA ParameterKey=SubnetB,ParameterValue=$SubnetB ParameterKey=Image,ParameterValue=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION ParameterKey=ServiceName,ParameterValue=$ServiceName ParameterKey=ContainerPort,ParameterValue=$ContainerPort ParameterKey=LoadBalancerPort,ParameterValue=$LoadBalancerPort ParameterKey=HealthCheckPath,ParameterValue=$HealthCheckPath ParameterKey=MinContainers,ParameterValue=$MinContainers ParameterKey=MaxContainers,ParameterValue=$MaxContainers ParameterKey=AutoScalingTargetValue,ParameterValue=$AutoScalingTargetValue --capabilities CAPABILITY_NAMED_IAM
         else

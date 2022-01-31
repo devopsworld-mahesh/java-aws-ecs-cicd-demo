@@ -164,9 +164,10 @@ Resources:
       HealthCheckIntervalSeconds: 10
       # will look for a 200 status code by default unless specified otherwise
       HealthCheckPath: !Ref HealthCheckPath
-      HealthCheckTimeoutSeconds: 5
-      UnhealthyThresholdCount: 2
-      HealthyThresholdCount: 2
+      HealthCheckTimeoutSeconds: 10
+      UnhealthyThresholdCount: 5
+      HealthyThresholdCount: 5
+      HealthCheckIntervalSeconds: 20
       Name: !Join ['', [!Ref ServiceName, TargetGroup]]
       Port: !Ref ContainerPort
       Protocol: HTTP

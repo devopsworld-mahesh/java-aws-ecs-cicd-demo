@@ -12,6 +12,6 @@ public class GreetingController {
 
     @RequestMapping(value = "/hello", method = RequestMethod.GET)
     public String sayHello() {
-        return "Hello from AWS ProServe version2";
+        return "Hello from AWS ProServe version3- DevOpsAOD";
     }
 }

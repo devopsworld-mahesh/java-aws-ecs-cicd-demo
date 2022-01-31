@@ -3,7 +3,8 @@ Resources:
   GitHubConnection:
     Type: 'AWS::CodeStarConnections::Connection'
     Properties:
-      ConnectionName: mahegithubconnection
+      ConnectionName:
+        Fn::Sub: GitHubConnection-${AWS::StackName}
       ProviderType: GitHub
       Tags:
         - Key: Project

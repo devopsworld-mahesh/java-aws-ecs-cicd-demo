@@ -10,9 +10,6 @@ Parameters:
     Type: AWS::EC2::Subnet::Id
   AppSubnetB:
     Type: AWS::EC2::Subnet::Id
-#  App_Image:
-#    Type: String
-#    Default: 123456789012.dkr.ecr.region.amazonaws.com/image:tag
   AppServiceName:
     Type: String
     Default: MyJavaAppService
@@ -40,10 +37,6 @@ Parameters:
   CodeBranchName:
     Type: String
     Default: master
-#  EKSClusterName:
-#    Type: String
-#  EKSCodeBuildAppName:
-#    Type: String
   EnvType:
     Type: String
   EcrDockerRepository:
@@ -169,9 +162,6 @@ Resources:
                   - application-autoscaling:*
                   - cloudwatch:DescribeAlarms
                   - cloudwatch:PutMetricAlarm
-#                  - eks:DescribeNodegroup
-#                  - eks:DescribeUpdate
-#                  - eks:DescribeCluster
               - Resource: !Sub arn:aws:s3:::${CodePipelineArtifactBucket}/*
                 Effect: Allow
                 Action:
@@ -194,38 +184,6 @@ Resources:
                 Effect: Allow
                 Action:
                   - codestar-connections:UseConnection
-  
-#  EksCodeBuildkubeRole:
-#    Type: AWS::IAM::Role
-#    Properties:
-#      RoleName:
-#        Fn::Sub: EksCodeBuildkubeRole-${AWS::StackName}
-#      Path: /
-#      AssumeRolePolicyDocument:
-#        Version: 2012-10-17
-#        Statement:
-#          - Effect: Allow
-#            Principal:
-#              AWS: !Sub arn:aws:iam::${AWS::AccountId}:role/service-role/${CodeBuildServiceRole}
-#            Action: sts:AssumeRole
-#      Policies:
-#        - PolicyName: codebuild-eks-access
-#          PolicyDocument:
-#            Version: 2012-10-17
-#            Statement:
-#              - Resource: '*'
-#                Effect: Allow
-#                Action:
-#                  - eks:DescribeNodegroup
-#                  - eks:DescribeUpdate
-#                  - eks:DescribeCluster
-#              #- Resource: !Sub arn:aws:iam::${AWS::AccountId}:role/${EksCodeBuildkubeRole}
-#              #  Effect: Allow
-#              #  Action: sts:AssumeRole
-#              - Resource: !Ref GithubConnectionArn
-#                Effect: Allow
-#                Action:
-#                  - codestar-connections:UseConnection
 
   StaticCodeAnalysis:
     Type: AWS::CodeBuild::Project
@@ -322,13 +280,6 @@ Resources:
             Value: !Ref AppMaxContainers
           - Name: AutoScalingTargetValue
             Value: !Ref AppAutoScalingTargetValue
-
-#          - Name: EKS_CLUSTER_NAME
-#            Value: !Ref EKSClusterName
-#          - Name: EKS_CODEBUILD_ROLE_ARN
-#            Value: !GetAtt EksCodeBuildkubeRole.Arn
-#          - Name: EKS_CODEBUILD_APP_NAME
-#            Value: !Ref EKSCodeBuildAppName
           - Name: ENV
             Value: !Ref EnvType
       Name:
@@ -359,10 +310,8 @@ Resources:
               Configuration:
                 ConnectionArn: !Ref GithubConnectionArn
                 BranchName: !Ref CodeBranchName
-                #RepositoryName:
-                  #Ref: SourceRepoName
+                DetectChanges: 'true'
                 FullRepositoryId: !Ref GithubRepoId
-#                OutputArtifactFormat: "CODE_ZIP"
                 OutputArtifactFormat: "CODEBUILD_CLONE_REF"
               OutputArtifacts:
                 - Name: SourceCodeApp
@@ -397,7 +346,6 @@ Resources:
               OutputArtifacts:
                 - Name: BuildOutput
               RunOrder: 3
-   #DependsOn: CodeBuildImageProject
         - Name: ApprovalToDeploy
           Actions:
             - Name: Approval
@@ -407,8 +355,6 @@ Resources:
                 Version: 1
                 Provider: Manual
               Configuration:
-                #NotificationArn:
-                  #Ref: MySNSTopic
                 CustomData: Approval or Reject the build to be deployed on Fargate
               InputArtifacts: []
               OutputArtifacts: []
@@ -433,5 +379,3 @@ Resources:
 Outputs:
   CodeBuildServiceRoleARN:
     Value: !GetAtt CodeBuildServiceRole.Arn
-#  EksCodeBuildkubeRoleARN:
-#    Value: !GetAtt EksCodeBuildkubeRole.Arn
